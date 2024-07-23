@@ -5,7 +5,7 @@ import time
 
 # Telnet 服务器的主机和端口列表
 HOST = "192.168.1.228"
-PORTS = [5001]
+PORTS = [5002]
 
 
 def telnet_connect(host, port):
@@ -38,6 +38,9 @@ def read_config_file(config_name, port_index):
 def main():
     # 打开ospf和pim
     open_daemons = [
+        "sed -i 's/ospfd=no/ospfd=yes/g' /etc/frr/daemons",
+        "sed -i 's/ospf6d=no/ospf6d=yes/g' /etc/frr/daemons",
+        "sed -i 's/pimd=no/pimd=yes/g' /etc/frr/daemons",
         "sed -i 's/pim6d=no/pim6d=yes/g' /etc/frr/daemons"
     ]
     # 打开ipv4和ipv6的转发
@@ -50,6 +53,9 @@ def main():
         # 读取配置文件内容
         mgmtd_config_content = read_config_file("mgmtd", index + 1)
         if mgmtd_config_content is None:
+            continue
+        ospf6d_config_content = read_config_file("ospf6d", index + 1)
+        if ospf6d_config_content is None:
             continue
         pim6d_config_content = read_config_file("pim6d", index + 1)
         if pim6d_config_content is None:
@@ -67,6 +73,8 @@ def main():
         send_commands(tn, open_ipv4v6_forward)
         # 配置接口的ip地址
         send_commands(tn, [f"cat > /etc/frr/mgmtd.conf <<EOF\n{mgmtd_config_content}\nEOF"])
+        # 配置ospf
+        send_commands(tn, [f"cat > /etc/frr/ospf6d.conf <<EOF\n{ospf6d_config_content}\nEOF"])
         # 配置pim
         send_commands(tn, [f"cat > /etc/frr/pim6d.conf <<EOF\n{pim6d_config_content}\nEOF"])
 
