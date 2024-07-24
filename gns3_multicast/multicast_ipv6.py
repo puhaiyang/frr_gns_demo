@@ -4,8 +4,9 @@ import telnetlib
 import time
 
 # Telnet 服务器的主机和端口列表
-HOST = "192.168.1.228"
-PORTS = [5006, 5008, 5010]
+HOST = "192.168.31.169"
+# PORTS = [5006, 5008, 5010]
+PORTS = [5006, 5015, 5001]
 
 
 def telnet_connect(host, port):
