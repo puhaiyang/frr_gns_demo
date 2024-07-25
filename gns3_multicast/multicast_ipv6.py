@@ -42,16 +42,11 @@ def main():
         "sed -i 's/ospf6d=no/ospf6d=yes/g' /etc/frr/daemons",
         "sed -i 's/pim6d=no/pim6d=yes/g' /etc/frr/daemons"
     ]
-    # # 打开ipv4和ipv6的转发
-    # open_ipv4v6_forward = [
-    #     "echo 1 > /proc/sys/net/ipv4/ip_forward",
-    #     "echo 1 > /proc/sys/net/ipv6/conf/all/forwarding"
-    # ]
 
     for index, port in enumerate(PORTS):
         # 读取配置文件内容
-        frr_config_content = read_config_file("frr", index + 1)
-        if frr_config_content is None:
+        zebra_config_content = read_config_file("zebra", index + 1)
+        if zebra_config_content is None:
             continue
         mgmtd_config_content = read_config_file("mgmtd", index + 1)
         if mgmtd_config_content is None:
@@ -71,8 +66,8 @@ def main():
 
         # 打开ipv6的ospf和pim
         send_commands(tn, open_daemons)
-        # 设置host名称，并开启ipv6转发
-        # send_commands(tn, [f"cat > /etc/frr/frr.conf <<EOF\n{frr_config_content}\nEOF"])
+        # 开启ipv6转发
+        send_commands(tn, [f"cat > /etc/frr/zebra.conf <<EOF\n{zebra_config_content}\nEOF"])
         # 配置接口的ip地址
         send_commands(tn, [f"cat > /etc/frr/mgmtd.conf <<EOF\n{mgmtd_config_content}\nEOF"])
         # 配置ospf
