@@ -1,0 +1,8 @@
+network:
+  version: 2
+  renderer: NetworkManager
+  ethernets:
+    ens3:
+      addresses:
+        - fc00:0:0:2006::6/64
+      gateway6: fc00:0:0:2006::1
